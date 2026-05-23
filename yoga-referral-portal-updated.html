@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧘 Yoga Referral Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid #252b48;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #52cd69;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #52cd69;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0a0e27;
+            border: 2px solid #52cd69;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #7fdb97;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 24px;
+            background: #52cd69;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: rgba(82, 205, 105, 0.2);
+            color: #52cd69;
+            border: 1px solid #52cd69;
+        }
+
+        .error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: #252b48;
+            border: 1px solid #52cd69;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #52cd69;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .tier-section {
+            background: #252b48;
+            border: 1px solid #52cd69;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #0a0e27;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #52cd69;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        thead {
+            background: #252b48;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            color: #52cd69;
+            font-weight: 600;
+            border-bottom: 1px solid #52cd69;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #252b48;
+        }
+
+        .status-pending {
+            color: #ff8c42;
+            font-weight: bold;
+        }
+
+        .status-confirmed {
+            color: #52cd69;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            margin-top: 10px;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen" class="card">
+            <h1>🧘 Yoga Referral Portal</h1>
+            <p>Enter your phone number to login</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="loginPhone" placeholder="9876543210" required>
+                </div>
+                <button type="submit" id="loginBtn">Send Magic Link</button>
+            </form>
+
+            <div id="loginMessage"></div>
+        </div>
+
+        <!-- DASHBOARD SCREEN -->
+        <div id="dashboardScreen" class="hidden">
+            <!-- HEADER -->
+            <div class="card">
+                <h1 id="welcomeText">Welcome! 🙏</h1>
+                <p>Your referral dashboard</p>
+            </div>
+
+            <!-- STATS -->
+            <div class="card">
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalStat">0</div>
+                        <div class="stat-label">Total Referrals</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" style="color: #52cd69;" id="confirmedStat">0</div>
+                        <div class="stat-label">Confirmed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" style="color: #ff8c42;" id="pendingStat">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIER PROGRESS -->
+            <div class="card">
+                <div class="tier-section">
+                    <h3 style="color: #52cd69; margin-bottom: 12px;">Your Progress 🎯</h3>
+                    <p id="nextRewardText" style="margin: 0;">Next Reward: Loading...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0 / 10</p>
+                </div>
+            </div>
+
+            <!-- ADD REFERRAL FORM -->
+            <div class="card">
+                <h2>➕ Add a Referral</h2>
+                <p>Invite your friend to join free yoga classes</p>
+
+                <form id="referralForm" onsubmit="handleAddReferral(event)">
+                    <div class="form-group">
+                        <label>Friend's Name</label>
+                        <input type="text" id="refName" placeholder="Raj" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="refPhone" placeholder="9876543210" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email (optional)</label>
+                        <input type="email" id="refEmail" placeholder="raj@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>How do you know them?</label>
+                        <select id="refRelation" required>
+                            <option value="Friend">Friend</option>
+                            <option value="Family">Family</option>
+                            <option value="Gym Member">Gym Member</option>
+                            <option value="Colleague">Colleague</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="referralBtn">Send Invite</button>
+                </form>
+
+                <div id="referralMessage"></div>
+            </div>
+
+            <!-- REFERRALS LIST -->
+            <div class="card">
+                <h2>Your Referrals</h2>
+                <div id="referralsList"></div>
+            </div>
+
+            <!-- LOGOUT -->
+            <div class="card">
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const N8N_WEBHOOK_BASE = 'https://n8n.theprodigylab.com/webhook'; // Your n8n instance
+
+        // ==========================================
+        // STATE
+        // ==========================================
+        let currentUser = {
+            email: null,
+            name: null,
+            phone: null,
+            token: null
+        };
+
+        // ==========================================
+        // LOGIN HANDLER
+        // ==========================================
+        async function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value;
+            const btn = document.getElementById('loginBtn');
+            const msgDiv = document.getElementById('loginMessage');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            msgDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${N8N_WEBHOOK_BASE}/yoga/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="message success">✅ Magic link sent to WhatsApp! Check your messages.</div>';
+                    // Store token for verification
+                    currentUser.phone = phone;
+                    currentUser.token = data.token;
+                    
+                    // Auto-load dashboard after 3 sec (user will click link)
+                    setTimeout(verifyToken, 3000);
+                } else {
+                    msgDiv.innerHTML = `<div class="message error">❌ ${data.error || 'Error sending link'}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = `<div class="message error">❌ Network error: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Magic Link';
+            }
+        }
+
+        // ==========================================
+        // VERIFY TOKEN & LOAD DASHBOARD
+        // ==========================================
+        async function verifyToken() {
+            if (!currentUser.token) return;
+
+            try {
+                // Check if token is valid by reading from Sheets
+                const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${USERS_SHEET_ID}/values/Users`;
+                const response = await fetch(sheetUrl);
+                
+                if (response.ok) {
+                    // Token is valid, load dashboard
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('dashboardScreen').classList.remove('hidden');
+                    loadDashboard();
+                }
+            } catch (err) {
+                console.log('Waiting for user to click magic link...');
+            }
+        }
+
+        // ==========================================
+        // LOAD DASHBOARD DATA
+        // ==========================================
+        async function loadDashboard() {
+            try {
+                // For now, show empty dashboard - will populate from Sheets
+                document.getElementById('welcomeText').textContent = `Welcome! 🙏`;
+                updateDashboard();
+            } catch (err) {
+                console.error('Error loading dashboard:', err);
+            }
+        }
+
+        // ==========================================
+        // ADD REFERRAL
+        // ==========================================
+        async function handleAddReferral(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('refName').value;
+            const phone = document.getElementById('refPhone').value;
+            const email = document.getElementById('refEmail').value;
+            const relation = document.getElementById('refRelation').value;
+            const btn = document.getElementById('referralBtn');
+            const msgDiv = document.getElementById('referralMessage');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            msgDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${N8N_WEBHOOK_BASE}/yoga/referral`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        referrerEmail: currentUser.email || 'user@yoga.com',
+                        referrerName: currentUser.name || 'User',
+                        referredName: name,
+                        referredPhone: phone,
+                        referredEmail: email,
+                        howYouKnowThem: relation
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="message success">✅ Referral sent! WhatsApp invite queued.</div>';
+                    document.getElementById('referralForm').reset();
+                    setTimeout(updateDashboard, 1000);
+                } else {
+                    msgDiv.innerHTML = `<div class="message error">❌ ${data.error || 'Error'}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = `<div class="message error">❌ Network error: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Invite';
+            }
+        }
+
+        // ==========================================
+        // UPDATE DASHBOARD
+        // ==========================================
+        async function updateDashboard() {
+            try {
+                // Read from Sheets directly (Google Sheets public access)
+                const sheetUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEETS_ID}/values/All_Referrals?key=YOUR_GOOGLE_API_KEY`;
+                
+                // For demo: show mock data
+                const mockReferrals = [
+                    { name: 'Raj', phone: '9876543210', status: 'Pending', invitedDate: '2024-06-18' },
+                    { name: 'Priya', phone: '9876543211', status: 'Confirmed', invitedDate: '2024-06-18' }
+                ];
+
+                const total = mockReferrals.length;
+                const confirmed = mockReferrals.filter(r => r.status === 'Confirmed').length;
+                const pending = total - confirmed;
+
+                // Update stats
+                document.getElementById('totalStat').textContent = total;
+                document.getElementById('confirmedStat').textContent = confirmed;
+                document.getElementById('pendingStat').textContent = pending;
+
+                // Update tier
+                const tiers = [
+                    { count: 3, name: '3 Member Volunteer Certificate' },
+                    { count: 10, name: '10 Members Free T-Shirt' },
+                    { count: 25, name: '25 Members 2 Months Free Offline+' },
+                    { count: 100, name: '100 Members Free TTC' }
+                ];
+
+                let nextTier = tiers[0];
+                for (let tier of tiers) {
+                    if (confirmed >= tier.count) {
+                        nextTier = tiers[tiers.indexOf(tier) + 1] || tier;
+                    }
+                }
+
+                const progress = (confirmed / nextTier.count) * 100;
+                document.getElementById('nextRewardText').textContent = `Next: ${nextTier.name}`;
+                document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
+                document.getElementById('progressText').textContent = `${confirmed} / ${nextTier.count}`;
+
+                // Render referrals table
+                let html = '<table><thead><tr><th>Name</th><th>Phone</th><th>Status</th><th>Invited</th></tr></thead><tbody>';
+                mockReferrals.forEach(ref => {
+                    const statusClass = ref.status === 'Confirmed' ? 'status-confirmed' : 'status-pending';
+                    html += `<tr>
+                        <td>${ref.name}</td>
+                        <td>${ref.phone}</td>
+                        <td><span class="${statusClass}">${ref.status}</span></td>
+                        <td>${ref.invitedDate}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+
+                document.getElementById('referralsList').innerHTML = html;
+
+            } catch (err) {
+                console.error('Error updating dashboard:', err);
+            }
+        }
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+        function handleLogout() {
+            currentUser = { email: null, name: null, phone: null, token: null };
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('loginPhone').value = '';
+            document.getElementById('loginMessage').innerHTML = '';
+        }
+
+        // Auto-verify token on page load if coming from magic link
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            if (token) {
+                currentUser.token = token;
+                verifyToken();
+            }
+        });
+    </script>
+</body>
+</html>
